@@ -1,0 +1,37 @@
+from vision import VisionSystem
+import cv2
+
+def lacak_kamera():
+    print("\n[SYSTEM] Memulai Modul AI Kamera...")
+    try:
+        # Sesuaikan dengan nama model Anda
+        vision = VisionSystem(model_path="my_model.pt") 
+        
+        print("[SYSTEM] Mengambil jepretan kamera...")
+        frame = vision.capture_frame()
+        
+        if frame is None:
+            print("\n[ERROR FATAL] Kamera gagal menangkap gambar (Frame kosong)!")
+            print("Penyebab: Kabel kamera tidak pas, atau Anda menggunakan Webcam USB (bukan Picamera).")
+            return
+            
+        print("[SYSTEM] Kamera sukses membaca gambar. Ukuran:", frame.shape)
+        print("\n[AI] Membaca semua objek mentah tanpa filter:")
+        
+        # Membaca seluruh output YOLO (tanpa mempedulikan itu botol atau bukan)
+        raw_detections = vision._predict(frame)
+        if len(raw_detections) == 0:
+            print(" -> YOLO tidak melihat objek apapun. Coba turunkan YOLO_CONFIDENCE_THRESHOLD di config.py.")
+        else:
+            for d in raw_detections:
+                print(f" -> Terdeteksi: '{d['class_name']}' (Akurasi: {d['confidence']:.2f})")
+                
+    except Exception as e:
+        print(f"\n[ERROR SISTEM] {e}")
+    finally:
+        if 'vision' in locals():
+            vision.close()
+            print("[SYSTEM] Kamera ditutup.")
+
+if __name__ == "__main__":
+    lacak_kamera()

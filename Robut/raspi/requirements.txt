@@ -1,0 +1,7 @@
+# Dependencies
+ultralytics
+opencv-python
+picamera2
+pyserial
+numpy
+matplotlib
